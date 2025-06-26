@@ -26,7 +26,7 @@ function animateNumber(start, end) {
 }
 
 async function fetchGroupData(groupId) {
-  if (isFetching) return; // Prevent overlapping requests
+  if (isFetching) return;
   isFetching = true;
   loader.style.display = "block";
   statusEl.style.color = "#b0b0b0";
@@ -57,10 +57,7 @@ async function fetchGroupData(groupId) {
   }
 }
 
-function updateGroup() {
-  const groupIdInput = groupInput.value.trim();
-  const groupId = parseInt(groupIdInput, 10);
-
+function updateGroup(groupId) {
   if (isNaN(groupId) || groupId <= 0) {
     statusEl.style.color = "#e74c3c";
     statusEl.textContent = "❌ Invalid Group ID.";
@@ -68,8 +65,6 @@ function updateGroup() {
     clearInterval(refreshInterval);
     refreshInterval = null;
     currentGroupId = null;
-    // Also clear the hash in URL
-    history.replaceState(null, "", window.location.pathname);
     return;
   }
 
@@ -78,41 +73,48 @@ function updateGroup() {
     currentCount = 0;
     countEl.textContent = "0";
 
-    // Update the URL hash with the group ID
-    history.replaceState(null, "", `#${groupId}`);
+    // Update URL without reloading page
+    history.replaceState(null, "", `/${groupId}/`);
+    groupInput.value = groupId;
   }
 
   fetchGroupData(groupId);
 
-  // Clear and restart refresh interval
   if (refreshInterval) clearInterval(refreshInterval);
   refreshInterval = setInterval(() => {
     fetchGroupData(groupId);
   }, 15000); // every 15 seconds
 }
 
-// On page load: read the group ID from URL hash and auto load
+function getGroupIdFromPath() {
+  const path = window.location.pathname;
+  const idStr = path.replace(/\//g, "");
+  const id = parseInt(idStr, 10);
+  return (isNaN(id) || id <= 0) ? null : id;
+}
+
+// Initialize on page load
 window.addEventListener("DOMContentLoaded", () => {
-  const hash = window.location.hash.substring(1);
-  if (hash) {
-    const groupId = parseInt(hash, 10);
-    if (!isNaN(groupId) && groupId > 0) {
-      groupInput.value = groupId;
-      updateGroup();
-    }
+  const groupIdFromUrl = getGroupIdFromPath();
+  if (groupIdFromUrl) {
+    updateGroup(groupIdFromUrl);
   }
 });
 
 // Button click handler
 checkBtn.addEventListener("click", () => {
   if (isFetching) return;
-  updateGroup();
+  const groupIdInput = parseInt(groupInput.value.trim(), 10);
+  updateGroup(groupIdInput);
 });
 
-// Enter key triggers update
+// Also submit on Enter key in input
 groupInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    if (!isFetching) updateGroup();
+    if (!isFetching) {
+      const groupIdInput = parseInt(groupInput.value.trim(), 10);
+      updateGroup(groupIdInput);
+    }
   }
 });
