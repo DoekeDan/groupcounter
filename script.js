@@ -1,46 +1,16 @@
 const countEl = document.getElementById("memberCount");
 const statusEl = document.getElementById("status");
 const loader = document.getElementById("loader");
+const groupInput = document.getElementById("groupInput");
+const checkBtn = document.getElementById("checkBtn");
+
 let currentCount = 0;
-
-function updateGroup() {
-  const groupIdInput = document.getElementById("groupInput").value.trim();
-  const groupId = parseInt(groupIdInput, 10);
-
-  if (isNaN(groupId) || groupId <= 0) {
-    statusEl.textContent = "❌ Invalid Group ID.";
-    countEl.textContent = "0";
-    return;
-  }
-
-  statusEl.textContent = "🔄 Loading group data...";
-  loader.style.display = "block";
-
-  fetch(`https://corsproxy.io/?https://groups.roblox.com/v1/groups/${groupId}`)
-    .then((res) => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    })
-    .then((data) => {
-      const newCount = data.memberCount;
-      const groupName = data.name || "Unknown";
-
-      statusEl.textContent = `✅ Group: ${groupName}`;
-      animateNumber(currentCount, newCount);
-      currentCount = newCount;
-    })
-    .catch((err) => {
-      console.error("Fetch error:", err);
-      statusEl.textContent = "❌ Group not found or error fetching.";
-      countEl.textContent = "Error";
-    })
-    .finally(() => {
-      loader.style.display = "none";
-    });
-}
+let currentGroupId = null;
+let refreshInterval = null;
+let isFetching = false;
 
 function animateNumber(start, end) {
-  const duration = 800;
+  const duration = 1000;
   const startTime = performance.now();
 
   function update(time) {
@@ -52,6 +22,80 @@ function animateNumber(start, end) {
       requestAnimationFrame(update);
     }
   }
-
   requestAnimationFrame(update);
 }
+
+async function fetchGroupData(groupId) {
+  if (isFetching) return; // Prevent overlapping requests
+  isFetching = true;
+  loader.style.display = "block";
+  statusEl.style.color = "#b0b0b0";
+  statusEl.textContent = "🔄 Loading group data...";
+  try {
+    const response = await fetch(`https://corsproxy.io/?https://groups.roblox.com/v1/groups/${groupId}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+
+    if (!data.memberCount || !data.name) {
+      throw new Error("Incomplete data");
+    }
+
+    statusEl.style.color = "#2ecc71";
+    statusEl.textContent = `✅ Group: ${data.name}`;
+
+    animateNumber(currentCount, data.memberCount);
+    currentCount = data.memberCount;
+  } catch (err) {
+    statusEl.style.color = "#e74c3c";
+    statusEl.textContent = "❌ Group not found or error fetching.";
+    countEl.textContent = "Error";
+    console.error("Fetch error:", err);
+  } finally {
+    loader.style.display = "none";
+    isFetching = false;
+  }
+}
+
+function updateGroup() {
+  const groupIdInput = groupInput.value.trim();
+  const groupId = parseInt(groupIdInput, 10);
+
+  if (isNaN(groupId) || groupId <= 0) {
+    statusEl.style.color = "#e74c3c";
+    statusEl.textContent = "❌ Invalid Group ID.";
+    countEl.textContent = "0";
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+    currentGroupId = null;
+    return;
+  }
+
+  if (groupId !== currentGroupId) {
+    currentGroupId = groupId;
+    currentCount = 0;
+    countEl.textContent = "0";
+  }
+
+  fetchGroupData(groupId);
+
+  // Clear and restart refresh interval
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => {
+    fetchGroupData(groupId);
+  }, 15000); // every 15 seconds
+}
+
+// Debounce button to prevent spam clicks
+checkBtn.addEventListener("click", () => {
+  if (isFetching) return;
+  updateGroup();
+});
+
+// Optional: Press Enter key in input triggers update
+groupInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    if (!isFetching) updateGroup();
+  }
+});
