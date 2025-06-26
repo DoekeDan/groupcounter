@@ -68,6 +68,8 @@ function updateGroup() {
     clearInterval(refreshInterval);
     refreshInterval = null;
     currentGroupId = null;
+    // Also clear the hash in URL
+    history.replaceState(null, "", window.location.pathname);
     return;
   }
 
@@ -75,6 +77,9 @@ function updateGroup() {
     currentGroupId = groupId;
     currentCount = 0;
     countEl.textContent = "0";
+
+    // Update the URL hash with the group ID
+    history.replaceState(null, "", `#${groupId}`);
   }
 
   fetchGroupData(groupId);
@@ -86,13 +91,25 @@ function updateGroup() {
   }, 15000); // every 15 seconds
 }
 
-// Debounce button to prevent spam clicks
+// On page load: read the group ID from URL hash and auto load
+window.addEventListener("DOMContentLoaded", () => {
+  const hash = window.location.hash.substring(1);
+  if (hash) {
+    const groupId = parseInt(hash, 10);
+    if (!isNaN(groupId) && groupId > 0) {
+      groupInput.value = groupId;
+      updateGroup();
+    }
+  }
+});
+
+// Button click handler
 checkBtn.addEventListener("click", () => {
   if (isFetching) return;
   updateGroup();
 });
 
-// Optional: Press Enter key in input triggers update
+// Enter key triggers update
 groupInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
