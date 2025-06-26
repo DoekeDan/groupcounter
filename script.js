@@ -1,101 +1,156 @@
-const countEl = document.getElementById("memberCount");
-const statusEl = document.getElementById("status");
-const loader = document.getElementById("loader");
-const groupInput = document.getElementById("groupInput");
-const checkBtn = document.getElementById("checkBtn");
-
-let currentCount = 0;
-let currentGroupId = null;
-let refreshInterval = null;
-let isFetching = false;
-
-function animateNumber(start, end) {
-  const duration = 1000;
-  const startTime = performance.now();
-
-  function update(time) {
-    const progress = Math.min((time - startTime) / duration, 1);
-    const value = Math.floor(start + (end - start) * progress);
-    countEl.textContent = value.toLocaleString();
-
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    }
-  }
-  requestAnimationFrame(update);
+/* Reset & base */
+* {
+  box-sizing: border-box;
 }
 
-async function fetchGroupData(groupId) {
-  if (isFetching) return; // Prevent overlapping requests
-  isFetching = true;
-  loader.style.display = "block";
-  statusEl.style.color = "#b0b0b0";
-  statusEl.textContent = "🔄 Loading group data...";
-  try {
-    const response = await fetch(`https://corsproxy.io/?https://groups.roblox.com/v1/groups/${groupId}`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-
-    if (!data.memberCount || !data.name) {
-      throw new Error("Incomplete data");
-    }
-
-    statusEl.style.color = "#2ecc71";
-    statusEl.textContent = `✅ Group: ${data.name}`;
-
-    animateNumber(currentCount, data.memberCount);
-    currentCount = data.memberCount;
-  } catch (err) {
-    statusEl.style.color = "#e74c3c";
-    statusEl.textContent = "❌ Group not found or error fetching.";
-    countEl.textContent = "Error";
-    console.error("Fetch error:", err);
-  } finally {
-    loader.style.display = "none";
-    isFetching = false;
-  }
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #2b2b2b, #121212);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
 }
 
-function updateGroup() {
-  const groupIdInput = groupInput.value.trim();
-  const groupId = parseInt(groupIdInput, 10);
-
-  if (isNaN(groupId) || groupId <= 0) {
-    statusEl.style.color = "#e74c3c";
-    statusEl.textContent = "❌ Invalid Group ID.";
-    countEl.textContent = "0";
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-    currentGroupId = null;
-    return;
-  }
-
-  if (groupId !== currentGroupId) {
-    currentGroupId = groupId;
-    currentCount = 0;
-    countEl.textContent = "0";
-  }
-
-  fetchGroupData(groupId);
-
-  // Clear and restart refresh interval
-  if (refreshInterval) clearInterval(refreshInterval);
-  refreshInterval = setInterval(() => {
-    fetchGroupData(groupId);
-  }, 15000); // every 15 seconds
+.container {
+  background: #1c1c1c;
+  padding: 3rem 3.5rem;
+  border-radius: 16px;
+  width: 480px; /* widened */
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(46, 204, 113, 0.3); /* green glow around box */
+  position: relative;
+  animation: fadeIn 0.7s ease forwards;
 }
 
-// Debounce button to prevent spam clicks
-checkBtn.addEventListener("click", () => {
-  if (isFetching) return;
-  updateGroup();
-});
+/* Title with solid green text (no gradient) */
+.title {
+  font-weight: 700;
+  font-size: 2.4rem;
+  letter-spacing: 1.1px;
+  margin-bottom: 2rem;
+  color: #2ecc71; /* solid green */
+  text-shadow: none; /* remove glowing shadow */
+  user-select: text;
+}
 
-// Optional: Press Enter key in input triggers update
-groupInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    if (!isFetching) updateGroup();
-  }
-});
+/* Input & button */
+.input-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.3rem;
+  justify-content: center;
+}
+
+input[type="number"] {
+  flex-grow: 1;
+  font-size: 1.1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: none;
+  outline-offset: 3px;
+  outline-color: #27ae60;
+  background: #222;
+  color: #eee;
+  transition: background-color 0.3s ease;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+input[type="number"]:focus {
+  background: #2a2a2a;
+}
+
+button {
+  background: #27ae60;
+  border: none;
+  padding: 0 1.2rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow:
+    0 4px 10px rgba(39, 174, 96, 0.4);
+  transition: background-color 0.3s ease, transform 0.15s ease;
+}
+
+button:hover {
+  background: #2ecc71;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Status text */
+.status-text {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  min-height: 1.4rem;
+  color: #b0b0b0;
+  user-select: none;
+  transition: color 0.4s ease;
+}
+
+/* Member count display */
+.member-display {
+  font-weight: 700;
+  font-size: 2.7rem;
+  letter-spacing: 1.6px;
+  color: #2ecc71;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: baseline;
+  user-select: text;
+  min-height: 3.5rem;
+}
+
+/* Label text */
+.member-display .label {
+  font-weight: 600;
+  font-size: 1.7rem;
+  color: #9ae6b4;
+  user-select: none;
+}
+
+/* Member count big solid green text */
+.member-display .member-count {
+  font-size: 4.5rem; /* bigger size */
+  position: relative;
+  transition: opacity 0.4s ease;
+  will-change: contents;
+  color: #2ecc71; /* solid green */
+  text-shadow: none; /* no glow */
+}
+
+/* Spinner */
+.spinner {
+  margin: 1.6rem auto 0;
+  border: 5px solid #2a2a2a;
+  border-top: 5px solid #2ecc71;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  animation: spin 1.2s linear infinite;
+  display: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(18px);}
+  to {opacity: 1; transform: translateY(0);}
+}
