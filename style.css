@@ -114,6 +114,14 @@ button:active {
   min-height: 3.5rem;
 }
 
+/* Increase size here */
+.member-display .member-count {
+  font-size: 4.5rem; /* bigger size */
+  position: relative;
+  transition: opacity 0.4s ease;
+  will-change: contents;
+}
+
 /* Label text */
 .member-display .label {
   font-weight: 600;
