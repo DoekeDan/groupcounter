@@ -34,7 +34,7 @@ body {
   letter-spacing: 1.1px;
   margin-bottom: 2rem;
   color: #2ecc71; /* solid green */
-  text-shadow: none; /* remove glowing shadow */
+  text-shadow: none;
   user-select: text;
 }
 
@@ -98,36 +98,18 @@ button:active {
   transition: color 0.4s ease;
 }
 
-/* Member count display */
+/* Member count display - only the big number now */
 .member-display {
   font-weight: 700;
-  font-size: 2.7rem;
+  font-size: 4.5rem; /* bigger size */
   letter-spacing: 1.6px;
-  color: #2ecc71;
+  color: #2ecc71; /* solid green */
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
   align-items: baseline;
   user-select: text;
   min-height: 3.5rem;
-}
-
-/* Label text */
-.member-display .label {
-  font-weight: 600;
-  font-size: 1.7rem;
-  color: #9ae6b4;
-  user-select: none;
-}
-
-/* Member count big solid green text */
-.member-display .member-count {
-  font-size: 4.5rem; /* bigger size */
-  position: relative;
-  transition: opacity 0.4s ease;
-  will-change: contents;
-  color: #2ecc71; /* solid green */
-  text-shadow: none; /* no glow */
+  text-shadow: none;
 }
 
 /* Spinner */
