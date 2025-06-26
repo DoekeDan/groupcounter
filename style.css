@@ -20,9 +20,9 @@ body {
   background: #1c1c1c;
   padding: 3rem 3.5rem;
   border-radius: 16px;
-  width: 360px;
+  width: 480px; /* widened */
   text-align: center;
-  box-shadow: 0 12px 40px rgba(46, 204, 113, 0.3);
+  box-shadow: 0 12px 40px rgba(46, 204, 113, 0.3); /* green glow around box */
   position: relative;
   animation: fadeIn 0.7s ease forwards;
 }
