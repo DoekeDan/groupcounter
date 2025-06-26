@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roblox Group Member Counter</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Roblox Group Member Counter</h1>
-    
+  <main class="container">
+    <h1 class="title">Roblox Group Member Counter</h1>
+
     <div class="input-group">
-      <input type="number" id="groupInput" placeholder="Enter Group ID" />
-      <button onclick="updateGroup()">Check</button>
+      <input
+        type="number"
+        id="groupInput"
+        placeholder="Enter Group ID"
+        autocomplete="off"
+        aria-label="Roblox Group ID"
+      />
+      <button id="checkBtn" aria-label="Check Group Member Count">Check</button>
     </div>
 
-    <p id="status">Enter a Group ID to begin</p>
-    <h2>Members: <span id="memberCount">0</span></h2>
-    
+    <p id="status" class="status-text">Enter a Group ID to begin</p>
+
+    <div class="member-display">
+      <span class="label">Members:</span>
+      <span id="memberCount" class="member-count">0</span>
+    </div>
+
     <div class="spinner" id="loader"></div>
-  </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
