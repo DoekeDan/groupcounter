@@ -27,16 +27,14 @@ body {
   animation: fadeIn 0.7s ease forwards;
 }
 
-/* Title with subtle glow */
+/* Title with solid green text (no gradient) */
 .title {
   font-weight: 700;
   font-size: 2.4rem;
   letter-spacing: 1.1px;
   margin-bottom: 2rem;
-  color: #2ecc71;
-  text-shadow:
-    0 0 6px #2ecc71,
-    0 0 10px #27ae60;
+  color: #2ecc71; /* solid green */
+  text-shadow: none; /* remove glowing shadow */
   user-select: text;
 }
 
@@ -114,14 +112,6 @@ button:active {
   min-height: 3.5rem;
 }
 
-/* Increase size here */
-.member-display .member-count {
-  font-size: 4.5rem; /* bigger size */
-  position: relative;
-  transition: opacity 0.4s ease;
-  will-change: contents;
-}
-
 /* Label text */
 .member-display .label {
   font-weight: 600;
@@ -130,11 +120,14 @@ button:active {
   user-select: none;
 }
 
-/* Animated number fade-in */
-.member-count {
+/* Member count big solid green text */
+.member-display .member-count {
+  font-size: 4.5rem; /* bigger size */
   position: relative;
   transition: opacity 0.4s ease;
   will-change: contents;
+  color: #2ecc71; /* solid green */
+  text-shadow: none; /* no glow */
 }
 
 /* Spinner */
