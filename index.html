@@ -9,8 +9,15 @@
 <body>
   <div class="container">
     <h1>Roblox Group Member Counter</h1>
-    <p>Group ID: <span id="groupId">1234567</span></p>
-    <h2>Members: <span id="memberCount">Loading...</span></h2>
+    
+    <div class="input-group">
+      <input type="number" id="groupInput" placeholder="Enter Group ID" />
+      <button onclick="updateGroup()">Check</button>
+    </div>
+
+    <p id="status">Enter a Group ID to begin</p>
+    <h2>Members: <span id="memberCount">0</span></h2>
+    <div class="spinner" id="loader"></div>
   </div>
 
   <script src="script.js"></script>
