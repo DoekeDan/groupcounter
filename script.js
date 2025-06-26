@@ -16,7 +16,7 @@ function updateGroup() {
   statusEl.textContent = "🔄 Loading group data...";
   loader.style.display = "block";
 
-  fetch(`https://groups.roblox.com/v1/groups/${groupId}`)
+  fetch(`https://corsproxy.io/?https://groups.roblox.com/v1/groups/${groupId}`)
     .then((res) => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
