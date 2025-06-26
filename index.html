@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roblox Community Livecount</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+
+    input, button {
+      padding: 10px 15px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    input {
+      width: 200px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Roblox Community Livecount</h1>
+  <input type="text" id="communityId" placeholder="Enter Community ID" />
+  <button onclick="fetchLiveCount()">Get Livecount</button>
+  <br>
+  <label><input type="checkbox" id="autoRefresh" /> Auto Refresh Every 10s</label>
+  <div id="result">Waiting for input...</div>
+
+  <script>
+    async function fetchLiveCount() {
+      const id = document.getElementById("communityId").value.trim();
+      const result = document.getElementById("result");
+
+      if (!id) {
+        result.textContent = "Please enter a Community ID.";
+        return;
+      }
+
+      const url = `https://groups.roproxy.com/v1/communities/${id}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Request failed");
+        const data = await response.json();
+        result.textContent = `Community: ${data.name} | Members: ${data.memberCount}`;
+      } catch (err) {
+        result.textContent = "Error fetching community data. ID may be invalid.";
+      }
+    }
+
+    setInterval(() => {
+      if (document.getElementById("autoRefresh").checked) {
+        fetchLiveCount();
+      }
+    }, 10000);
+  </script>
+</body>
+</html>
