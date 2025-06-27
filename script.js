@@ -83,7 +83,7 @@ function updateGroup(groupId) {
   if (refreshInterval) clearInterval(refreshInterval);
   refreshInterval = setInterval(() => {
     fetchGroupData(groupId);
-  }, 15000);
+  }, 5000);
 }
 
 function getGroupIdFromHash() {
