@@ -73,8 +73,8 @@ function updateGroup(groupId) {
     currentCount = 0;
     countEl.textContent = "0";
 
-    // Update URL without reloading page
-    history.replaceState(null, "", `/${groupId}/`);
+    const basePath = window.location.pathname.split('/')[1] || '';
+    history.replaceState(null, "", `/${basePath}/${groupId}/`);
     groupInput.value = groupId;
   }
 
@@ -83,17 +83,15 @@ function updateGroup(groupId) {
   if (refreshInterval) clearInterval(refreshInterval);
   refreshInterval = setInterval(() => {
     fetchGroupData(groupId);
-  }, 15000); // every 15 seconds
+  }, 15000);
 }
 
 function getGroupIdFromPath() {
-  const path = window.location.pathname;
-  const idStr = path.replace(/\//g, "");
-  const id = parseInt(idStr, 10);
+  const parts = window.location.pathname.split("/").filter(p => p !== "");
+  const id = parseInt(parts[1], 10); // e.g., /groupcounter/4413376/
   return (isNaN(id) || id <= 0) ? null : id;
 }
 
-// Initialize on page load
 window.addEventListener("DOMContentLoaded", () => {
   const groupIdFromUrl = getGroupIdFromPath();
   if (groupIdFromUrl) {
@@ -101,14 +99,12 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Button click handler
 checkBtn.addEventListener("click", () => {
   if (isFetching) return;
   const groupIdInput = parseInt(groupInput.value.trim(), 10);
   updateGroup(groupIdInput);
 });
 
-// Also submit on Enter key in input
 groupInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
