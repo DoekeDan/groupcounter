@@ -28,7 +28,9 @@ function animateNumber(start, end) {
 async function fetchGroupData(groupId) {
   if (isFetching) return;
   isFetching = true;
-  loader.style.display = "block";
+
+  if (!refreshInterval) loader.style.display = "block";
+
   statusEl.style.color = "#b0b0b0";
   statusEl.textContent = "🔄 Loading group data...";
   try {
@@ -72,9 +74,7 @@ function updateGroup(groupId) {
     currentGroupId = groupId;
     currentCount = 0;
     countEl.textContent = "0";
-
-    const basePath = window.location.pathname.split('/')[1] || '';
-    history.replaceState(null, "", `/${basePath}/${groupId}/`);
+    location.hash = `#${groupId}`;
     groupInput.value = groupId;
   }
 
@@ -86,16 +86,16 @@ function updateGroup(groupId) {
   }, 15000);
 }
 
-function getGroupIdFromPath() {
-  const parts = window.location.pathname.split("/").filter(p => p !== "");
-  const id = parseInt(parts[1], 10); // e.g., /groupcounter/4413376/
-  return (isNaN(id) || id <= 0) ? null : id;
+function getGroupIdFromHash() {
+  const hash = window.location.hash.replace("#", "").trim();
+  const id = parseInt(hash, 10);
+  return isNaN(id) || id <= 0 ? null : id;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const groupIdFromUrl = getGroupIdFromPath();
-  if (groupIdFromUrl) {
-    updateGroup(groupIdFromUrl);
+  const groupIdFromHash = getGroupIdFromHash();
+  if (groupIdFromHash) {
+    updateGroup(groupIdFromHash);
   }
 });
 
